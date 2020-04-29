@@ -3,7 +3,7 @@
 # Author: Dynodix
 #
 """
-<plugin key="sensibo" name="Sensibo plugin" author="dynodix" version="1.0.0" externallink="http://www.redox.si/">>
+<plugin key="sensibo" name="Sensibo Pod v1" author="dynodix" version="1.0.0" externallink="http://www.redox.si/">>
     <params>
             <param field="Mode1" label="Sensibo API Key" width="200px" required="true" default=""/>
             <param field="Mode2" label="POD or Device name" width="90px" required="true" default=""/>
@@ -14,19 +14,12 @@ import Domoticz
 import subprocess
 import json
 import pySensibo_Sky
-# ssh prerequisites
-# ssh-keygen -t rsa
-#  scp -r /root/.ssh/id_rsa.pub  Admin@<IP of mPort>:/var/etc/persistent/.ssh/authorized_keys
 
 class BasePlugin:
     enabled = False
     pluginState = "Not Ready"
     socketOn = "FALSE"
     sessionCookie = ""
-    
-
-
-
 
     def __init__(self):
         return
@@ -43,7 +36,7 @@ class BasePlugin:
         modes = dict()
         domNameMode = "|".join(str(mode.name) for mode in device.supported_modes)
         #mode = device.mode
-        swingNameMode = "|".join(str(swinga) for swinga in device.mode.supported_swing_modes)
+        #swingNameMode = "|".join(str(swinga) for swinga in device.mode.supported_swing_modes)
         fanNameMode = "|".join(str(fans) for fans in device.mode.supported_fan_levels)
         temperatureNameMode = "|".join(str(temper) for temper in device.mode.supported_temps)
         #
@@ -57,9 +50,9 @@ class BasePlugin:
              OptionsMode = {"LevelActions": "||||","LevelNames": domNameMode,"LevelOffHidden": "True","SelectorStyle": "1"}
              Domoticz.Device(Name="Mode", Unit=3, TypeName="Selector Switch", Image=16, Options=OptionsMode, Used=1).Create()
              Domoticz.Log("Mode selector created.")
-             OptionsSwing = {"LevelActions": "||||","LevelNames": swingNameMode,"LevelOffHidden": "false","SelectorStyle": "1"}
-             Domoticz.Device(Name="Swing", Unit=4, TypeName= "Selector Switch", Image=7, Options=OptionsSwing, Used=1).Create()
-             Domoticz.Log("Swing selector created.")
+             #OptionsSwing = {"LevelActions": "||||","LevelNames": swingNameMode,"LevelOffHidden": "false","SelectorStyle": "1"}
+             #Domoticz.Device(Name="Swing", Unit=4, TypeName= "Selector Switch", Image=7, Options=OptionsSwing, Used=1).Create()
+             #Domoticz.Log("Swing selector created.")
              OptionsFan = {"LevelActions": "||||","LevelNames": fanNameMode,"LevelOffHidden": "false","SelectorStyle": "1"}
              Domoticz.Device(Name="Fan", Unit=5, TypeName= "Selector Switch", Image=7, Options=OptionsFan, Used=1).Create()
              Domoticz.Log("Fan selector created.") 
@@ -113,10 +106,10 @@ class BasePlugin:
               mode = modes[modeNames[Level // 10]]
               mode.activate()
               Devices[3].Update(power, str(Level))
-        if (Unit == 4):
-              swingNames = str(" ".join(str(swinga) for swinga in device.mode.supported_swing_modes)).split()
-              device.mode.swing = swingNames[Level // 10]
-              Devices[4].Update(power, str(Level))
+        # if (Unit == 4):
+        #       swingNames = str(" ".join(str(swinga) for swinga in device.mode.supported_swing_modes)).split()
+        #       device.mode.swing = swingNames[Level // 10]
+        #       Devices[4].Update(power, str(Level))
         if (Unit == 5):
               fanNames = str(" ".join(str(fans) for fans in device.mode.supported_fan_levels)).split()
               device.mode.fan_level = fanNames[Level // 10]
@@ -167,15 +160,15 @@ class BasePlugin:
            ModeImage = 7
         if acmode == 'heat':
            ModeImage = 15
-        swingNames = str(" ".join(str(swinga) for swinga in device.mode.supported_swing_modes)).split()
-        swingmode = str(10 * swingNames.index(device.mode.swing))
+        # swingNames = str(" ".join(str(swinga) for swinga in device.mode.supported_swing_modes)).split()
+        # swingmode = str(10 * swingNames.index(device.mode.swing))
         fanNames = str(" ".join(str(fans) for fans in device.mode.supported_fan_levels)).split()
         fanmode = str(10 * fanNames.index(device.mode.fan_level))
         temperatureNames = str(" ".join(str(tempe) for tempe in device.mode.supported_temps)).split()
         temperature = str(10 * temperatureNames.index(str(device.mode.temp)))
         Devices[1].Update(power, '')
         Devices[3].Update(power, codemode, Image=ModeImage)
-        Devices[4].Update(power, swingmode)
+        # Devices[4].Update(power, swingmode)
         Devices[5].Update(power, fanmode)
         Devices[6].Update(power, temperature, Image=ModeImage)
         #Domoticz.Log("Sensibo get temperatura "+temperatura+" mode=  ; " + codemode)
